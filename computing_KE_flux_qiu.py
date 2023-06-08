@@ -30,3 +30,14 @@ def computing_KE_flux_qiu(u, v, dist_x, dist_y, dx, dy):
     kr, ke_flux = computing_pi_qiu(fft_ke_adv,fft.fftshift(kx), fft.fftshift(ky),dkx,dky)
 
     return kr, ke_flux
+
+def computing_pi_qiu(ke_flux,kx,ky,dkx,dky):
+    wv, kr, dkr = radial_wavenumber(kx,ky,dkx,dky)
+    nx, ny, nt = ke_flux.shape
+    nr = kr.size
+    Er = np.zeros((nr,nt))
+    for i in range(kr.size):
+        fkr = (wv>=kr[i]-kr[0]) & (wv<=kr[i])
+        Er[i,:] = np.sum(ke_flux*fkr[:,:,None],axis=(0,1))        
+    ke_flux = np.mean(np.cumsum(Er[::-1],axis=0),axis=1)[::-1]
+    return kr, ke_flux
