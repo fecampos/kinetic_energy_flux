@@ -37,7 +37,8 @@ def computing_pi_qiu(ke_flux,kx,ky,dkx,dky):
     nr = kr.size
     Er = np.zeros((nr,nt))
     for i in range(kr.size):
-        fkr = (wv>=kr[i]-kr[0]) & (wv<=kr[i])
-        Er[i,:] = np.sum(ke_flux*fkr[:,:,None],axis=(0,1))        
+        fkr =  (wv>=kr[i]-dkr/2) & (wv<=kr[i]+dkr/2)
+        Er[i,:] = np.sum(ke_flux*fkr[:,:,None],axis=(0,1))           
     ke_flux = np.mean(np.cumsum(Er[::-1],axis=0),axis=1)[::-1]
+    ke_flux[0], ke_flux[-1] = 0,0
     return kr, ke_flux
